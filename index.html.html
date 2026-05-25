@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply — The Shift Clinic</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Montserrat', sans-serif; background: #EEEBE2; min-height: 100vh; }
+  .sf-header { background: #152D53; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; }
+  .sf-logo { font-family: 'Libre Baskerville', serif; color: #fff; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .sf-logo span { color: #E59E2C; }
+  .sf-header-sub { font-size: 12px; color: rgba(255,255,255,0.5); }
+  .sf-body { max-width: 640px; margin: 0 auto; padding: 40px 24px 60px; }
+  .sf-progress { display: flex; gap: 6px; margin-bottom: 28px; }
+  .sf-progress-dot { height: 4px; border-radius: 2px; background: #DCE4F1; flex: 1; transition: background 0.3s; }
+  .sf-progress-dot.done { background: #E59E2C; }
+  .sf-intro { margin-bottom: 32px; }
+  .sf-intro h1 { font-family: 'Libre Baskerville', serif; color: #152D53; font-size: 26px; margin-bottom: 10px; line-height: 1.3; }
+  .sf-intro p { color: #555; font-size: 14px; line-height: 1.7; }
+  .sf-card { background: #fff; border-radius: 8px; padding: 32px; box-shadow: 0 2px 8px rgba(21,45,83,0.08); margin-bottom: 24px; }
+  .sf-section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #E59E2C; margin-bottom: 20px; border-bottom: 1px solid #DCE4F1; padding-bottom: 10px; }
+  .sf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .sf-row.full { grid-template-columns: 1fr; }
+  .sf-field { display: flex; flex-direction: column; margin-bottom: 16px; }
+  .sf-field:last-child { margin-bottom: 0; }
+  .sf-field label { font-size: 13px; font-weight: 600; color: #152D53; margin-bottom: 6px; }
+  .sf-field label .req { color: #E59E2C; margin-left: 2px; }
+  .sf-field input, .sf-field select, .sf-field textarea {
+    border: 1px solid #DCE4F1; border-radius: 4px; padding: 10px 14px;
+    font-size: 14px; font-family: 'Montserrat', sans-serif; color: #152D53;
+    background: #fff; transition: border-color 0.2s, box-shadow 0.2s; outline: none; width: 100%;
+  }
+  .sf-field input:focus, .sf-field select:focus, .sf-field textarea:focus {
+    border-color: #E59E2C; box-shadow: 0 0 0 3px rgba(229,158,44,0.15);
+  }
+  .sf-field textarea { resize: vertical; min-height: 90px; }
+  .sf-field select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23152D53' stroke-width='1.5' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+  }
+  .sf-radio-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .sf-radio-opt { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px 14px; border: 1px solid #DCE4F1; border-radius: 4px; transition: border-color 0.2s, background 0.2s; }
+  .sf-radio-opt:hover { border-color: #E59E2C; background: #FDFAF4; }
+  .sf-radio-opt.selected { border-color: #E59E2C; background: #FEF8EE; }
+  .sf-radio-opt input[type="radio"] { accent-color: #E59E2C; width: 16px; height: 16px; flex-shrink: 0; }
+  .sf-radio-opt span { font-size: 13px; color: #152D53; line-height: 1.4; }
+  .sf-screen { display: none; }
+  .sf-screen.active { display: block; }
+  .sf-btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .sf-btn { padding: 12px 28px; border-radius: 6px; font-size: 14px; font-weight: 600; font-family: 'Montserrat', sans-serif; cursor: pointer; border: none; transition: background 0.2s, color 0.2s; }
+  .sf-btn-primary { background: #E59E2C; color: #fff; }
+  .sf-btn-primary:hover { background: #8B3B08; }
+  .sf-btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+  .sf-btn-secondary { background: transparent; color: #152D53; border: 1.5px solid #152D53; }
+  .sf-btn-secondary:hover { background: #152D53; color: #fff; }
+  .sf-disclaimer { font-size: 12px; color: #555; background: #F7F5F0; border-radius: 6px; padding: 14px; line-height: 1.6; margin-bottom: 12px; max-height: 130px; overflow-y: auto; border: 1px solid #DCE4F1; }
+  .sf-checkbox-wrap { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+  .sf-checkbox-wrap input { accent-color: #E59E2C; width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; }
+  .sf-checkbox-wrap span { font-size: 13px; color: #152D53; line-height: 1.5; }
+  .sf-error { font-size: 12px; color: #c0392b; margin-top: 5px; display: none; }
+  .has-error input, .has-error select, .has-error textarea { border-color: #c0392b !important; }
+  .has-error .sf-error { display: block; }
+  .has-error .sf-radio-group { border: 1px solid #c0392b; border-radius: 4px; padding: 6px; }
+  .ineligible-box { text-align: center; }
+  .ineligible-box h2 { font-family: 'Libre Baskerville', serif; color: #152D53; font-size: 22px; margin-bottom: 14px; line-height: 1.3; }
+  .ineligible-box p { color: #555; font-size: 14px; line-height: 1.7; margin-bottom: 14px; }
+  .alt-option { background: #EEEBE2; border-radius: 8px; padding: 18px 22px; text-align: left; margin-top: 16px; }
+  .alt-option h3 { font-family: 'Libre Baskerville', serif; font-size: 15px; color: #152D53; margin-bottom: 6px; }
+  .alt-option p { font-size: 13px; color: #555; margin: 0; }
+  .success-box { text-align: center; padding: 12px 0; }
+  .success-icon { width: 64px; height: 64px; background: #E59E2C; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+  .success-box h2 { font-family: 'Libre Baskerville', serif; color: #152D53; font-size: 24px; margin-bottom: 12px; }
+  .success-box p { color: #555; font-size: 14px; line-height: 1.7; }
+  .success-box a { color: #E59E2C; text-decoration: none; }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (max-width: 520px) {
+    .sf-row { grid-template-columns: 1fr; }
+    .sf-header { padding: 18px 20px; }
+    .sf-body { padding: 28px 16px 48px; }
+    .sf-card { padding: 22px 18px; }
+    .sf-intro h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sf-header">
+  <div class="sf-logo">The <span>SHIFT</span> Clinic</div>
+  <div class="sf-header-sub">Application Form</div>
+</div>
+
+<div class="sf-body">
+  <div class="sf-progress" id="progress">
+    <div class="sf-progress-dot done" id="dot0"></div>
+    <div class="sf-progress-dot" id="dot1"></div>
+    <div class="sf-progress-dot" id="dot2"></div>
+    <div class="sf-progress-dot" id="dot3"></div>
+  </div>
+
+  <!-- SCREEN 1 -->
+  <div class="sf-screen active" id="screen-0">
+    <div class="sf-intro">
+      <h1>Welcome to The Shift Application</h1>
+      <p>This short form collects the basic information we need to begin your onboarding process. It only takes about 1–2 minutes.</p>
+    </div>
+    <div class="sf-card">
+      <div class="sf-section-label">Step 1 of 4 — Basic Information</div>
+      <div class="sf-row">
+        <div class="sf-field" id="f-firstname">
+          <label>First name <span class="req">*</span></label>
+          <input type="text" id="firstname" placeholder="Jane" autocomplete="given-name" />
+          <span class="sf-error">Please enter your first name</span>
+        </div>
+        <div class="sf-field" id="f-lastname">
+          <label>Last name <span class="req">*</span></label>
+          <input type="text" id="lastname" placeholder="Smith" autocomplete="family-name" />
+          <span class="sf-error">Please enter your last name</span>
+        </div>
+      </div>
+      <div class="sf-row full">
+        <div class="sf-field" id="f-email">
+          <label>Email address <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="jane@example.com" autocomplete="email" />
+          <span class="sf-error">Please enter a valid email address</span>
+        </div>
+      </div>
+      <div class="sf-row full">
+        <div class="sf-field" id="f-phone">
+          <label>Phone number <span class="req">*</span></label>
+          <input type="tel" id="phone" placeholder="(416) 555-0123" autocomplete="tel" />
+          <span class="sf-error">Please enter your phone number</span>
+        </div>
+      </div>
+    </div>
+    <div class="sf-btn-row">
+      <div></div>
+      <button class="sf-btn sf-btn-primary" onclick="goTo(1)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2 -->
+  <div class="sf-screen" id="screen-1">
+    <div class="sf-intro">
+      <h1>Your Details</h1>
+      <p>We need a few more details to complete your profile.</p>
+    </div>
+    <div class="sf-card">
+      <div class="sf-section-label">Step 2 of 4 — Address & Demographics</div>
+      <div class="sf-row full">
+        <div class="sf-field" id="f-address">
+          <label>Street address <span class="req">*</span></label>
+          <input type="text" id="address" placeholder="123 Main Street" autocomplete="street-address" />
+          <span class="sf-error">Please enter your address</span>
+        </div>
+      </div>
+      <div class="sf-row">
+        <div class="sf-field" id="f-city">
+          <label>City / Town <span class="req">*</span></label>
+          <input type="text" id="city" placeholder="Hamilton" autocomplete="address-level2" />
+          <span class="sf-error">Please enter your city</span>
+        </div>
+        <div class="sf-field" id="f-province">
+          <label>Province <span class="req">*</span></label>
+          <input type="text" id="province" placeholder="Ontario" autocomplete="address-level1" />
+          <span class="sf-error">Please enter your province</span>
+        </div>
+      </div>
+      <div class="sf-row">
+        <div class="sf-field" id="f-postal">
+          <label>Postal code <span class="req">*</span></label>
+          <input type="text" id="postal" placeholder="L8L 6A1" autocomplete="postal-code" />
+          <span class="sf-error">Please enter your postal code</span>
+        </div>
+        <div class="sf-field">
+          <label>Country</label>
+          <input type="text" id="country" value="Canada" autocomplete="country-name" />
+        </div>
+      </div>
+      <div class="sf-row">
+        <div class="sf-field" id="f-dob">
+          <label>Date of birth <span class="req">*</span></label>
+          <input type="date" id="dob" autocomplete="bday" />
+          <span class="sf-error">Please enter your date of birth</span>
+        </div>
+        <div class="sf-field" id="f-gender">
+          <label>Gender / Sex <span class="req">*</span></label>
+          <select id="gender" onchange="toggleSelfDescribe()">
+            <option value="">Select...</option>
+            <option>Woman</option>
+            <option>Man</option>
+            <option>Non-binary</option>
+            <option>Prefer not to say</option>
+            <option>Prefer to self-describe</option>
+          </select>
+          <span class="sf-error">Please select an option</span>
+        </div>
+      </div>
+      <div class="sf-row full" id="self-describe-row" style="display:none;">
+        <div class="sf-field">
+          <label>How would you like to describe your gender identity?</label>
+          <input type="text" id="gender-describe" placeholder="Please describe..." />
+        </div>
+      </div>
+    </div>
+    <div class="sf-btn-row">
+      <button class="sf-btn sf-btn-secondary" onclick="goTo(0)">← Back</button>
+      <button class="sf-btn sf-btn-primary" onclick="goTo(2)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3 -->
+  <div class="sf-screen" id="screen-2">
+    <div class="sf-intro">
+      <h1>Health Information</h1>
+      <p>This information is required to set up your patient file. Please have your Ontario Health Card handy.</p>
+    </div>
+    <div class="sf-card">
+      <div class="sf-section-label">Step 3 of 4 — Health Card & Eligibility</div>
+      <div class="sf-row full">
+        <div class="sf-field" id="f-ohip">
+          <label>OHIP number and version code <span class="req">*</span></label>
+          <input type="text" id="ohip" placeholder="1234-567-890 AB" />
+          <span class="sf-error">Please enter your OHIP number</span>
+        </div>
+      </div>
+      <div class="sf-field" id="f-ontario">
+        <label>I confirm that I am a resident of Ontario <span class="req">*</span></label>
+        <div class="sf-radio-group">
+          <label class="sf-radio-opt" id="ontario-yes-opt" onclick="selectOntario('yes')">
+            <input type="radio" name="ontario" value="yes" /> <span>Yes, I am an Ontario resident</span>
+          </label>
+          <label class="sf-radio-opt" id="ontario-no-opt" onclick="selectOntario('no')">
+            <input type="radio" name="ontario" value="no" /> <span>No, I am not an Ontario resident</span>
+          </label>
+        </div>
+        <span class="sf-error" id="ontario-error">Please confirm your Ontario residency</span>
+      </div>
+    </div>
+    <div class="sf-btn-row">
+      <button class="sf-btn sf-btn-secondary" onclick="goTo(1)">← Back</button>
+      <button class="sf-btn sf-btn-primary" onclick="checkOntario()">Continue →</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 4 -->
+  <div class="sf-screen" id="screen-3">
+    <div class="sf-intro">
+      <h1>Almost There</h1>
+      <p>One last step before you submit your application.</p>
+    </div>
+    <div class="sf-card">
+      <div class="sf-section-label">Step 4 of 4 — Terms & Your Story</div>
+      <div class="sf-field" id="f-terms">
+        <label>Terms & Conditions <span class="req">*</span></label>
+        <div class="sf-disclaimer">By applying to The Shift Clinic, you agree to our terms of service and privacy policy. The Shift Clinic is a virtual medical practice operating in Ontario, Canada. Your personal health information will be collected, used, and disclosed in accordance with Ontario's Personal Health Information Protection Act (PHIPA). Information collected through this form will be used solely for the purpose of establishing a patient-provider relationship. You may withdraw your application at any time prior to onboarding by contacting us at team@theshift.clinic.</div>
+        <label class="sf-checkbox-wrap">
+          <input type="checkbox" id="terms-check" />
+          <span>I have read and agree to the Terms & Conditions</span>
+        </label>
+        <span class="sf-error" id="terms-error" style="margin-top:6px;">Please accept the Terms & Conditions to continue</span>
+      </div>
+      <div class="sf-row full" style="margin-top:8px;">
+        <div class="sf-field" id="f-why">
+          <label>Why are you interested in joining this novel virtual community? <span class="req">*</span></label>
+          <textarea id="why" placeholder="Tell us a little about yourself and what brings you to The Shift..."></textarea>
+          <span class="sf-error">Please share a little about your interest</span>
+        </div>
+      </div>
+    </div>
+    <div class="sf-btn-row">
+      <button class="sf-btn sf-btn-secondary" onclick="goTo(2)">← Back</button>
+      <button class="sf-btn sf-btn-primary" id="submit-btn" onclick="submitForm()">Submit Application →</button>
+    </div>
+  </div>
+
+  <!-- INELIGIBLE -->
+  <div class="sf-screen" id="screen-ineligible">
+    <div class="sf-card">
+      <div class="ineligible-box">
+        <h2>You're not eligible for the Clinic — but you still have options.</h2>
+        <p>The Clinic is currently limited to residents of Ontario, so you can't continue this application. But you can still move forward with support that works.</p>
+        <div class="alt-option">
+          <h3>ShiftMySystem™ School</h3>
+          <p>Learn the foundations of appetite, weight, and real-life health improvement — on your own schedule.</p>
+        </div>
+        <div class="alt-option" style="margin-top:12px;">
+          <h3>ShiftMySystem™ Weekender</h3>
+          <p>A live, virtual weekend that moves you forward. Two afternoons of practice, reflection, and guidance — designed to help you trust your instincts, build appetite literacy, and create a plan that fits your life.</p>
+        </div>
+        <p style="margin-top:20px;font-size:13px;color:#666;">We hope to open to patients in other provinces in the future. Keep an eye on your email and follow <strong>@theshift.system</strong> on Instagram to stay updated.</p>
+        <button class="sf-btn sf-btn-secondary" onclick="goTo(2)" style="margin-top:20px;">← Go Back</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="sf-screen" id="screen-success">
+    <div class="sf-card">
+      <div class="success-box">
+        <div class="success-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <h2>Thank you for applying to the Clinic.</h2>
+        <p>A team member will be in touch within one business day.</p>
+        <p style="margin-top:12px;font-size:13px;color:#888;">Please check your email for next steps, including your payment link. If you don't see it within a few minutes, check your spam folder.</p>
+        <p style="margin-top:12px;font-size:13px;color:#888;">Questions? Reach us at <a href="mailto:team@theshift.clinic">team@theshift.clinic</a></p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init('CO2-AMVDI8vvAK-UZ');
+
+  var ontarioValue = null;
+  var currentScreen = 0;
+
+  function goTo(n) {
+    if (n > currentScreen && !validateScreen(currentScreen)) return;
+    document.getElementById('screen-' + currentScreen).classList.remove('active');
+    currentScreen = n;
+    document.getElementById('screen-' + n).classList.add('active');
+    updateProgress(n);
+    window.scrollTo(0, 0);
+  }
+
+  function updateProgress(n) {
+    for (var i = 0; i < 4; i++) {
+      var dot = document.getElementById('dot' + i);
+      if (dot) dot.classList.toggle('done', i <= n);
+    }
+  }
+
+  function toggleSelfDescribe() {
+    var val = document.getElementById('gender').value;
+    document.getElementById('self-describe-row').style.display = val === 'Prefer to self-describe' ? 'block' : 'none';
+  }
+
+  function selectOntario(val) {
+    ontarioValue = val;
+    document.getElementById('ontario-yes-opt').classList.toggle('selected', val === 'yes');
+    document.getElementById('ontario-no-opt').classList.toggle('selected', val === 'no');
+    document.getElementById('f-ontario').classList.remove('has-error');
+  }
+
+  function checkOntario() {
+    if (!document.getElementById('ohip').value.trim()) {
+      document.getElementById('f-ohip').classList.add('has-error'); return;
+    } else { document.getElementById('f-ohip').classList.remove('has-error'); }
+    if (!ontarioValue) {
+      document.getElementById('f-ontario').classList.add('has-error'); return;
+    }
+    if (ontarioValue === 'no') {
+      document.getElementById('screen-2').classList.remove('active');
+      document.getElementById('screen-ineligible').classList.add('active');
+      document.getElementById('progress').style.display = 'none';
+      return;
+    }
+    goTo(3);
+  }
+
+  function validateScreen(n) {
+    var valid = true;
+    var checks = {
+      0: ['firstname','lastname','email','phone'],
+      1: ['address','city','province','postal','dob','gender']
+    };
+    if (checks[n]) {
+      checks[n].forEach(function(id) {
+        var el = document.getElementById(id);
+        var field = document.getElementById('f-' + id);
+        if (el && field) {
+          if (!el.value.trim()) { field.classList.add('has-error'); valid = false; }
+          else { field.classList.remove('has-error'); }
+        }
+      });
+    }
+    if (n === 0) {
+      var email = document.getElementById('email');
+      var fEmail = document.getElementById('f-email');
+      if (email && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+        fEmail.classList.add('has-error'); valid = false;
+      }
+    }
+    return valid;
+  }
+
+  function submitForm() {
+    var termsCheck = document.getElementById('terms-check');
+    var why = document.getElementById('why');
+    var fTerms = document.getElementById('f-terms');
+    var fWhy = document.getElementById('f-why');
+    var valid = true;
+
+    if (!termsCheck.checked) {
+      fTerms.classList.add('has-error');
+      document.getElementById('terms-error').style.display = 'block';
+      valid = false;
+    } else {
+      fTerms.classList.remove('has-error');
+      document.getElementById('terms-error').style.display = 'none';
+    }
+    if (!why.value.trim()) { fWhy.classList.add('has-error'); valid = false; }
+    else { fWhy.classList.remove('has-error'); }
+    if (!valid) return;
+
+    var btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Submitting...';
+
+    var genderVal = document.getElementById('gender').value;
+    var genderDescribe = document.getElementById('gender-describe').value;
+    var genderFull = (genderVal === 'Prefer to self-describe' && genderDescribe) ? genderDescribe : genderVal;
+    var firstName = document.getElementById('firstname').value;
+    var lastName = document.getElementById('lastname').value;
+    var email = document.getElementById('email').value;
+
+    var formData = {
+      _subject: 'New Shift Clinic Application — ' + firstName + ' ' + lastName,
+      _replyto: email,
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      phone: document.getElementById('phone').value,
+      address: document.getElementById('address').value,
+      city: document.getElementById('city').value,
+      province: document.getElementById('province').value,
+      postal_code: document.getElementById('postal').value,
+      country: document.getElementById('country').value,
+      date_of_birth: document.getElementById('dob').value,
+      gender: genderFull,
+      ohip_number: document.getElementById('ohip').value,
+      ontario_resident: 'Yes',
+      why_interested: why.value
+    };
+
+    // Send to Formspree (notifies Chantelle)
+    fetch('https://formspree.io/f/xdajwaob', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
+      if (result.ok || result.next) {
+        // Send auto-reply to applicant via EmailJS
+        return emailjs.send('service_4f1itcg', 'template_p71f0q7', {
+          first_name: firstName,
+          email: email
+        });
+      } else {
+        throw new Error('Formspree error');
+      }
+    })
+    .then(function() {
+      document.getElementById('screen-3').classList.remove('active');
+      document.getElementById('screen-success').classList.add('active');
+      document.getElementById('progress').style.display = 'none';
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.innerHTML = 'Submit Application →';
+      alert('Something went wrong. Please try again or email us at team@theshift.clinic');
+    });
+  }
+
+  document.addEventListener('input', function(e) {
+    var field = e.target.closest('.sf-field');
+    if (field && e.target.value && e.target.value.trim()) field.classList.remove('has-error');
+  });
+</script>
+</body>
+</html>
